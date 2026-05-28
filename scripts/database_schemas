@@ -1,0 +1,12 @@
+-- Create database - 3 varia
+create database DataWarehouse;
+
+-- Create schemas
+create schema bronze;
+go
+
+create schema silver;
+go
+
+create schema gold;
+go
