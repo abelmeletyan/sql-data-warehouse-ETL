@@ -1,0 +1,142 @@
+-- use DataWarehouse;     -- 3 vari
+
+-- exec bronze.load_bronze;
+
+set ansi_nulls on;
+go
+set quoted_identifier on;
+go
+
+create or alter proc bronze.load_bronze AS
+BEGIN
+	DECLARE @batch_start_time datetime2, @batch_end_time datetime2, @start_time datetime2, @end_time datetime2;
+
+	BEGIN TRY
+		set @batch_start_time = GETDATE();
+
+		print '>>> Batch run starts now';
+		print '>>> ==============================================='; 
+		print '';
+		print '>>> Table bronze.crm_cust_info loading started';
+		set @start_time = getdate();
+		print '>>> Truncate table: bronze.crm_cust_info';
+		truncate table bronze.crm_cust_info;
+
+		print '>>> Insert data into bronze.crm_cust_info';
+		bulk insert bronze.crm_cust_info
+		from 'F:\EXTERNAL HARD DRIVE\_SQL__________\Data with Baraa_04.08.26\datasets\source_crm\cust_info.csv'
+		with
+		(
+			firstrow = 2,
+			fieldterminator = ',',
+			tablock
+		);
+		set @end_time = getdate();
+		print '>>> Table bronze.crm_cust_info loading ended. Loading time: ' + cast(datediff(second, @start_time, @end_time) as varchar) + ' seconds and ' 
+																		 + cast(datediff(millisecond, @start_time, @end_time) as varchar) + ' milliseconds';
+
+		print '>>> Table bronze.crm_prd_info loading started';
+		set @start_time = getdate();
+		print '>>> Truncate table: bronze.crm_prd_info';
+		truncate table bronze.crm_prd_info;
+
+		print '>>> Insert data into bronze.crm_prd_info';
+		bulk insert bronze.crm_prd_info
+		from 'F:\EXTERNAL HARD DRIVE\_SQL__________\Data with Baraa_04.08.26\datasets\source_crm\prd_info.csv'
+		with
+		(
+			firstrow = 2,
+			fieldterminator = ',',
+			tablock
+		);
+		set @end_time = getdate();
+		print '>>> Table bronze.crm_prd_info loading ended. Loading time: ' + cast(datediff(second, @start_time, @end_time) as varchar) + ' seconds and ' 
+																		 + cast(datediff(millisecond, @start_time, @end_time) as varchar) + ' milliseconds';
+
+		print '>>> Table bronze.crm_sales_details loading started';
+		set @start_time = getdate();
+		print '>>> Truncate table: bronze.crm_sales_details';
+		truncate table bronze.crm_sales_details;
+
+		print '>>> Insert data into bronze.crm_sales_details';
+		bulk insert bronze.crm_sales_details
+		from 'F:\EXTERNAL HARD DRIVE\_SQL__________\Data with Baraa_04.08.26\datasets\source_crm\sales_details.csv'
+		with
+		(
+			firstrow = 2,
+			fieldterminator = ',',
+			tablock
+		);
+		set @end_time = getdate();
+		print '>>> Table bronze.crm_sales_details loading ended. Loading time: ' + cast(datediff(second, @start_time, @end_time) as varchar) + ' seconds and ' 
+																		 + cast(datediff(millisecond, @start_time, @end_time) as varchar) + ' milliseconds';
+
+		print '>>> Table bronze.erp_cust_az12 loading started';
+		set @start_time = getdate();
+		print '>>> Truncate table: bronze.erp_cust_az12';
+		truncate table bronze.erp_cust_az12;
+
+		print '>>> Insert data into bronze.erp_cust_az12';
+		bulk insert bronze.erp_cust_az12
+		from 'F:\EXTERNAL HARD DRIVE\_SQL__________\Data with Baraa_04.08.26\datasets\source_erp\cust_az12.csv'
+		with
+		(
+			firstrow = 2,
+			fieldterminator = ',',
+			tablock
+		);
+		set @end_time = getdate();
+		print '>>> Table bronze.erp_cust_az12 loading ended. Loading time: ' + cast(datediff(second, @start_time, @end_time) as varchar) + ' seconds and ' 
+																		 + cast(datediff(millisecond, @start_time, @end_time) as varchar) + ' milliseconds';
+
+		print '>>> Table bronze.erp_loc_a101 loading started';
+		set @start_time = getdate();
+		print '>>> Truncate table: bronze.erp_loc_a101';
+		truncate table bronze.erp_loc_a101;
+
+		print '>>> Insert data into bronze.erp_loc_a101';
+		bulk insert bronze.erp_loc_a101
+		from 'F:\EXTERNAL HARD DRIVE\_SQL__________\Data with Baraa_04.08.26\datasets\source_erp\loc_a101.csv'
+		with
+		(
+			firstrow = 2,
+			fieldterminator = ',',
+			tablock
+		);
+		set @end_time = getdate();
+		print '>>> Table bronze.erp_loc_a101 loading ended. Loading time: ' + cast(datediff(second, @start_time, @end_time) as varchar) + ' seconds and ' 
+																		 + cast(datediff(millisecond, @start_time, @end_time) as varchar) + ' milliseconds';
+
+		print '>>> Table bronze.erp_px_cat_g1v2 loading started';
+		set @start_time = getdate();
+		print '>>> Truncate table: bronze.erp_px_cat_g1v2';
+		truncate table bronze.erp_px_cat_g1v2;
+
+		print '>>> Insert data into bronze.erp_px_cat_g1v2';
+		bulk insert bronze.erp_px_cat_g1v2
+		from 'F:\EXTERNAL HARD DRIVE\_SQL__________\Data with Baraa_04.08.26\datasets\source_erp\px_cat_g1v2.csv'
+		with
+		(
+			firstrow = 2,
+			fieldterminator = ',',
+			tablock
+		);
+		set @end_time = getdate();
+		print '>>> Table bronze.erp_px_cat_g1v2 loading ended. Loading time: ' + cast(datediff(second, @start_time, @end_time) as varchar) + ' seconds and ' 
+																		 + cast(datediff(millisecond, @start_time, @end_time) as varchar) + ' milliseconds';
+
+		set @batch_end_time = GETDATE();
+		print '>>> ============================================================';
+		print '';
+		print '>>> Batch running ends. Run Time: '	+ cast(datediff(second, @batch_start_time, @batch_end_time) as varchar) + ' seconds and '
+													+ cast(datediff(millisecond, @batch_start_time, @batch_end_time) as varchar) + ' milliseconds';
+	END TRY
+	BEGIN CATCH
+		PRINT 'Error occurred while loading';
+		print 'Error message: ' + error_message();
+		print 'Error number: ' + cast(error_number() as varchar);
+		print 'Error state: ' + cast(error_state() as varchar);
+		print 'Error line: ' + cast(error_line() as varchar);
+		print 'Error procedure: ' + error_procedure();
+	END CATCH
+END
